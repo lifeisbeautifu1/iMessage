@@ -25,7 +25,7 @@ const Home: NextPage = () => {
         {session?.user?.username ? (
           <Chat />
         ) : (
-          <Auth session={session} reloadSession={reloadSession} />
+          <Auth reloadSession={reloadSession} />
         )}
       </Box>
     </>

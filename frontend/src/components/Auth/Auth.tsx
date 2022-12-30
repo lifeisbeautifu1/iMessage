@@ -1,7 +1,6 @@
 import { Button, Center, Image, Stack, Text, Input } from "@chakra-ui/react";
-import { Session } from "next-auth";
 import { useMutation } from "@apollo/client";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -9,12 +8,13 @@ import userOperations from "../../graphql/operations/user";
 import { CreateUsernameData, CreateUsernameVariables } from "../../util/types";
 
 type Props = {
-  session: Session | null;
   reloadSession: () => void;
 };
 
-const Auth = ({ session, reloadSession }: Props) => {
+const Auth = ({ reloadSession }: Props) => {
   const [username, setUsername] = useState("");
+
+  const { data: session } = useSession();
 
   const [createUsername, { loading, error }] = useMutation<
     CreateUsernameData,
@@ -58,7 +58,7 @@ const Auth = ({ session, reloadSession }: Props) => {
               placeholder="Enter a username"
               onChange={(e) => setUsername(e.target.value)}
             />
-            <Button width="100%" onClick={onSubmit}>
+            <Button width="100%" onClick={onSubmit} isLoading={loading}>
               Save
             </Button>
           </>
