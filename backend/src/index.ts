@@ -1,14 +1,14 @@
-import { ApolloServer } from "apollo-server-express";
-import {
-  ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginDrainHttpServer,
-} from "apollo-server-core";
+import { ApolloServer } from "@apollo/server";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { expressMiddleware } from "@apollo/server/express4";
 import { getSession } from "next-auth/react";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PrismaClient } from "@prisma/client";
 import { WebSocketServer } from "ws";
 import { PubSub } from "graphql-subscriptions";
 import { useServer } from "graphql-ws/lib/use/ws";
+import { json } from "body-parser";
+import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
 import http from "http";
@@ -56,7 +56,7 @@ async function main() {
     wsServer
   );
 
-  const corsConfig = {
+  const corsOptions = {
     origin: process.env.CLIENT_ORIGIN,
     credentials: true,
   };
@@ -64,12 +64,7 @@ async function main() {
   const server = new ApolloServer({
     schema,
     csrfPrevention: true,
-    cache: "bounded",
-    context: async ({ req, res }): Promise<GraphQLContext> => {
-      const session = await getSession({ req });
 
-      return { session: session as Session, prisma, pubsub };
-    },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       {
@@ -81,17 +76,28 @@ async function main() {
           };
         },
       },
-      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
   });
 
   await server.start();
-  server.applyMiddleware({ app, cors: corsConfig });
+
+  app.use(
+    "/graphql",
+    cors<cors.CorsRequest>(corsOptions),
+    json(),
+    expressMiddleware(server, {
+      context: async ({ req }): Promise<GraphQLContext> => {
+        const session = await getSession({ req });
+        return { session: session as Session, prisma, pubsub };
+      },
+    })
+  );
+
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 5000 }, resolve)
   );
 
-  console.log(`🚀 Server ready at http://localhost:5000${server.graphqlPath}`);
+  console.log(`🚀 Server ready at http://localhost:5000/graphql`);
 }
 
 main().catch((err) => console.error(err));
