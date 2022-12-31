@@ -11,7 +11,6 @@ const Chat = (props: Props) => {
     <Flex height="100vh">
       <ConversationWrapper />
       <FeedWrapper />
-      <Button onClick={() => signOut()}>logout</Button>
     </Flex>
   );
 };

@@ -25,6 +25,7 @@ import Participants from "./Participants";
 import { toast } from "react-hot-toast";
 import conversation from "../../../../graphql/operations/conversation";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 type Props = {
   isOpen: boolean;
@@ -35,6 +36,8 @@ const Modal = ({ isOpen, onClose }: Props) => {
   const { data: session } = useSession();
 
   const [username, setUsername] = useState("");
+
+  const router = useRouter();
 
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
 
@@ -66,7 +69,7 @@ const Modal = ({ isOpen, onClose }: Props) => {
 
   const onCreateConversation = async () => {
     try {
-      const {} = await createConversation({
+      const { data } = await createConversation({
         variables: {
           participantsIds: [
             session?.user.id!,
@@ -74,6 +77,16 @@ const Modal = ({ isOpen, onClose }: Props) => {
           ],
         },
       });
+      if (!data?.createConversation) {
+        throw new Error("Failed to create conversation");
+      }
+      const {
+        createConversation: { conversationId },
+      } = data;
+      router.push({ query: { conversationId } });
+      setParticipants([]);
+      setUsername("");
+      onClose();
     } catch (error: any) {
       console.error("onCreateConversation error: ", error);
       toast.error(error?.message);

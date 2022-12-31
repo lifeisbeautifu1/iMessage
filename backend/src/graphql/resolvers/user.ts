@@ -45,12 +45,15 @@ const resolvers = {
     ): Promise<CreateUsernameResponse> => {
       const { username } = args;
       const { prisma, session } = context;
-      const userId = session?.user?.id;
+
       if (!session?.user) {
         return {
           error: "Not authorized",
         };
       }
+      const {
+        user: { id: userId },
+      } = session;
       try {
         const existingUser = await prisma.user.findUnique({
           where: {

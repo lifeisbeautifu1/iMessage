@@ -1,3 +1,5 @@
+import { ConversationPopulated } from "../../../backend/src/util/types";
+
 // Users
 
 export type CreateUsernameData = {
@@ -25,6 +27,10 @@ export type SearchedUser = {
 };
 
 // Conversations
+
+export type ConversationsData = {
+  conversations: Array<ConversationPopulated>;
+};
 
 export type CreateConversationData = {
   createConversation: {
