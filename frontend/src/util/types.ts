@@ -1,4 +1,7 @@
-import { ConversationPopulated } from "../../../backend/src/util/types";
+import {
+  ConversationPopulated,
+  MessagePopulated,
+} from "../../../backend/src/util/types";
 
 // Users
 
@@ -40,4 +43,37 @@ export type CreateConversationData = {
 
 export type CreateConversationInput = {
   participantsIds: Array<string>;
+};
+
+export type ConversationUpdatedData = {
+  conversationUpdated: {
+    // conversation: Omit<ConversationPopulated, "latestMessage"> & {
+    //   latestMessage: MessagePopulated;
+    // };
+    conversation: ConversationPopulated;
+  };
+};
+
+export type ConversationDeletedData = {
+  conversationDeleted: {
+    id: string;
+  };
+};
+
+// Messages
+
+export type MessagesData = {
+  messages: Array<MessagePopulated>;
+};
+
+export type MessagesVariables = {
+  conversationId: string;
+};
+
+export type MessageSubscriptionData = {
+  subscriptionData: {
+    data: {
+      messageSent: MessagePopulated;
+    };
+  };
 };

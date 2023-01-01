@@ -30,9 +30,9 @@ interface ConversationItemProps {
   conversation: ConversationPopulated;
   onClick: () => void;
   //   onEditConversation?: () => void;
-  //   hasSeenLatestMessage?: boolean;
+  hasSeenLatestMessage?: boolean;
   selectedConversationId?: string;
-  //   onDeleteConversation?: (conversationId: string) => void;
+  onDeleteConversation: (conversationId: string) => Promise<void>;
   //   onLeaveConversation?: (conversation: ConversationPopulated) => void;
 }
 
@@ -40,11 +40,11 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   userId,
   conversation,
   selectedConversationId,
-  //   hasSeenLatestMessage,
+  hasSeenLatestMessage,
   //
   onClick,
   //   onEditConversation,
-  //   onDeleteConversation,
+  onDeleteConversation,
   //   onLeaveConversation,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -57,9 +57,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       setMenuOpen(true);
     }
   };
-
-  //   const showMenu =
-  //     onEditConversation && onDeleteConversation && onLeaveConversation;
 
   return (
     <Stack
@@ -77,47 +74,39 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       onContextMenu={handleClick}
       position="relative"
     >
-      {/* {showMenu && (
-        <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
-          <MenuList bg="#2d2d2d">
-            <MenuItem
-              icon={<AiOutlineEdit fontSize={20} />}
-              onClick={(event) => {
-                event.stopPropagation();
-                onEditConversation();
-              }}
-            >
-              Edit
-            </MenuItem>
-            {conversation.participants.length > 2 ? (
-              <MenuItem
-                icon={<BiLogOut fontSize={20} />}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onLeaveConversation(conversation);
-                }}
-              >
-                Leave
-              </MenuItem>
-            ) : (
-              <MenuItem
-                icon={<MdDeleteOutline fontSize={20} />}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onDeleteConversation(conversation.id);
-                }}
-              >
-                Delete
-              </MenuItem>
-            )}
-          </MenuList>
-        </Menu>
-      )} */}
-      {/* <Flex position="absolute" left="-6px">
+      <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
+        <MenuList bg="#2d2d2d">
+          <MenuItem
+            icon={<AiOutlineEdit fontSize={20} />}
+            onClick={(event) => {
+              event.stopPropagation();
+              // onEditConversation();
+            }}
+            bg="#2d2d2d"
+            _hover={{ bg: "whiteAlpha.300" }}
+          >
+            Edit
+          </MenuItem>
+
+          <MenuItem
+            icon={<MdDeleteOutline fontSize={20} />}
+            onClick={(event) => {
+              event.stopPropagation();
+              onDeleteConversation(conversation.id);
+            }}
+            bg="#2d2d2d"
+            _hover={{ bg: "whiteAlpha.300" }}
+          >
+            Delete
+          </MenuItem>
+        </MenuList>
+      </Menu>
+
+      <Flex position="absolute" left="-6px">
         {hasSeenLatestMessage === false && (
           <GoPrimitiveDot fontSize={18} color="#6B46C1" />
         )}
-      </Flex> */}
+      </Flex>
       <Avatar />
       <Flex justify="space-between" width="80%" height="100%">
         <Flex direction="column" width="70%" height="100%">

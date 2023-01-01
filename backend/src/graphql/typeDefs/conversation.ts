@@ -4,6 +4,8 @@ const typeDefs = gql`
   scalar Date
   type Mutation {
     createConversation(participantsIds: [String]): CreateConversationResponse
+    markConversationAsRead(userId: String!, conversationId: String!): Boolean
+    deleteConversation(conversationId: String!): Boolean
   }
   type CreateConversationResponse {
     conversationId: String
@@ -23,8 +25,16 @@ const typeDefs = gql`
     user: User
     hasSeenLatestMessage: Boolean
   }
+  type ConversationUpdatedSubscriptionPayload {
+    conversation: Conversation
+  }
+  type ConversationDeletedSubscriptionPayload {
+    id: String
+  }
   type Subscription {
     conversationCreated: Conversation
+    conversationUpdated: ConversationUpdatedSubscriptionPayload
+    conversationDeleted: ConversationDeletedSubscriptionPayload
   }
 `;
 
